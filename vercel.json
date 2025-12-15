@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/telegram",
+      "methods": ["POST"],
+      "dest": "/api/telegram.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ],
+  "functions": {
+    "api/telegram.js": {
+      "maxDuration": 30,
+      "memory": 256
+    },
+    "api/**/*.js": {
+      "maxDuration": 10,
+      "memory": 256
+    }
+  },
+  "env": {
+    "BOT_TOKEN": "@bot_token",
+    "BOT_SECRET": "@bot_secret",
+    "MONGO_URI": "@mongo_uri",
+    "ADMIN_CHAT_ID": "@admin_chat_id",
+    "WEBHOOK_SECRET": "@webhook_secret"
+  }
+}

@@ -282,15 +282,62 @@ bot-coreTribe/
 
 ## 🚀 التشغيل
 
-### وضع التطوير
+### وضع التطوير المحلي
 ```bash
 npm run dev
 ```
 
-### وضع الإنتاج
+### وضع الإنتاج المحلي
 ```bash
 npm start
 ```
+
+## ☁️ النشر على Vercel
+
+### 1. تثبيت Vercel CLI
+```bash
+npm i -g vercel
+```
+
+### 2. إعداد المتغيرات البيئية
+في لوحة تحكم Vercel، أضف المتغيرات التالية:
+- `BOT_TOKEN` - توكن البوت من @BotFather
+- `BOT_SECRET` - مفتاح سري للمصادقة
+- `MONGO_URI` - رابط اتصال MongoDB Atlas
+- `ADMIN_CHAT_ID` - معرف حساب الأدمن
+- `WEBHOOK_SECRET` - (اختياري) سر إضافي للأمان
+
+### 3. النشر
+```bash
+npm run deploy
+# أو
+vercel --prod
+```
+
+### 4. إعداد الـ Webhook
+بعد النشر، قم بتشغيل:
+```bash
+npm run webhook:set https://your-app.vercel.app/api/telegram
+```
+
+### أوامر الـ Webhook
+```bash
+# تعيين الـ webhook
+npm run webhook:set https://your-app.vercel.app/api/telegram
+
+# حذف الـ webhook
+npm run webhook:delete
+
+# معلومات الـ webhook الحالي
+npm run webhook:info
+```
+
+### ملاحظات مهمة للنشر
+- ⚠️ لا تستخدم `bot.launch()` في وضع Vercel
+- ✅ الـ handler يستقبل POST من Telegram
+- ✅ يتم معالجة الطلب عبر `bot.handleUpdate()`
+- ✅ Function timeout: 30 ثانية
+- ✅ Function memory: 256 MB
 
 ## 📝 API Endpoints
 
