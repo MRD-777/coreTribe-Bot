@@ -26,10 +26,10 @@
     }
   },
   "env": {
-    "BOT_TOKEN": "@bot_token",
-    "BOT_SECRET": "@bot_secret",
-    "MONGO_URI": "@mongo_uri",
-    "ADMIN_CHAT_ID": "@admin_chat_id",
-    "WEBHOOK_SECRET": "@webhook_secret"
+    "BOT_TOKEN": "@BOT_TOKEN",
+    "BOT_SECRET": "@BOT_SECRET",
+    "MONGO_URI": "@MONGO_URI",
+    "ADMIN_CHAT_ID": "@ADMIN_CHAT_ID",
+    "WEBHOOK_SECRET": "@WEBHOOK_SECRET"
   }
 }
