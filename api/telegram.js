@@ -32,90 +32,27 @@ bot = new Telegraf(process.env.BOT_TOKEN, {
 });
 
 function getBot() {
-  if (bot) return bot;
-  
   const h = loadHandlers();
-  bot = new Telegraf(process.env.BOT_TOKEN);
-  
-  // Global middleware: Check if user is banned
+
+  const bot = new Telegraf(process.env.BOT_TOKEN, {
+    telegram: { webhookReply: false }
+  });
+
+  console.log('🟢 Bot initialized with token:', process.env.BOT_TOKEN?.slice(0, 10));
+
+  // middlewares
   bot.use(async (ctx, next) => {
-    if (ctx.from) {
-      const telegramId = String(ctx.from.id);
-      const banned = await h.db.isUserBanned(telegramId);
-      
-      if (banned) {
-        const until = new Date(banned.until).toLocaleString('ar-EG');
-        return ctx.reply(`❗ حسابك موقوف حتى ${until}\n\nالسبب: ${banned.reason}`);
-      }
-    }
     return next();
   });
-  
-  // Global middleware: Validate ctx.from exists
-  bot.use(async (ctx, next) => {
-    if (!ctx.from && ctx.updateType !== 'callback_query') {
-      return; // Silent skip - no console spam
-    }
-    return next();
+
+  bot.command('start', async (ctx) => {
+    console.log('🟢 START RECEIVED');
+    await ctx.reply('✅ البوت شغال أخيرًا');
   });
-  
-  // Command handlers
-  bot.command('start', h.start);
-  bot.command('menu', h.menu);
-  bot.command('profile', h.profile.handleProfile);
-  bot.command('challenges', h.challenges.handleChallenges);
-  bot.command('submit', h.submit);
-  
-  // Admin commands
-  bot.command('review_list', h.admin.handleReviewList);
-  bot.command('adjust', h.admin.handleAdjust);
-  bot.command('ban_user', h.admin.handleBanUser);
-  bot.command('unban_user', h.admin.handleUnbanUser);
-  bot.command('create_challenge', h.admin.handleCreateChallenge);
-  bot.command('update_user', h.admin.handleUpdateUser);
-  bot.command('admin_help', h.admin.handleAdminHelp);
-  
-  // Callback query handlers - Main menu
-  bot.action('MAIN_MENU', h.menu);
-  bot.action('PROFILE', h.profile.handleProfile);
-  bot.action('CHALLENGES', h.challenges.handleChallenges);
-  bot.action('POINTS', h.profile.handlePoints);
-  bot.action('HOWTO', h.profile.handleHowTo);
-  bot.action('CONTACT_ADMIN', h.contact.handleContactAdmin);
-  
-  // Callback query handlers - Community system
-  bot.action('COMMUNITY', h.community.handleCommunitySystem);
-  bot.action('POINTS_SYSTEM', h.community.handlePointsSystem);
-  bot.action('LEVELS_SYSTEM', h.community.handleLevelsSystem);
-  bot.action('COMMUNITY_RULES', h.community.handleCommunityRules);
-  bot.action('BACK_TO_MENU', h.menu);
-  
-  // Dynamic callback handlers for challenges
-  bot.action(/^JOIN_(.+)$/, async (ctx) => {
-    const challengeId = ctx.match[1];
-    await h.challenges.handleJoinChallenge(ctx, challengeId);
-  });
-  
-  bot.action(/^VIEW_(.+)$/, async (ctx) => {
-    const challengeId = ctx.match[1];
-    await h.challenges.handleViewChallenge(ctx, challengeId);
-  });
-  
-  // Text message handler - for contact admin
-  bot.on('text', async (ctx) => {
-    const userId = ctx.from.id;
-    if (h.contact.isWaitingForMessage(userId)) {
-      await h.contact.handleUserMessage(ctx);
-    }
-  });
-  
-  // Error handler - log only errors
-  bot.catch((err) => {
-    console.error('Bot error:', err.message);
-  });
-  
+
   return bot;
 }
+
 
 // Idempotency: Track processed update_ids (in-memory for single instance)
 // Note: For multi-instance, use Redis/DB
