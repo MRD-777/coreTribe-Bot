@@ -27,7 +27,9 @@ function loadHandlers() {
 }
 
 // Singleton bot instance (stateless - recreated per cold start)
-let bot = null;
+bot = new Telegraf(process.env.BOT_TOKEN, {
+  telegram: { webhookReply: false }
+});
 
 function getBot() {
   if (bot) return bot;
