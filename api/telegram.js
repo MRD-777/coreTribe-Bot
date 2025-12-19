@@ -7,6 +7,11 @@ const { Telegraf } = require('telegraf');
 let handlersLoaded = false;
 let handlers = {};
 
+bot.on('message', (ctx) => {
+  console.log('📩 MESSAGE RECEIVED:', ctx.message.text);
+  ctx.reply('وصلت رسالة 👍');
+});
+
 function loadHandlers() {
   if (handlersLoaded) return handlers;
   
